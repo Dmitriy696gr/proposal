@@ -259,6 +259,11 @@
 </head>
 <body>
 
+    <!-- Аудио -->
+    <audio id="bg-music" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="start-screen" id="start-screen">
         <h1 class="start-title">С самого начала</h1>
         <button class="start-btn" id="start-btn">Начать</button>
@@ -303,11 +308,18 @@
     </section>
 
     <script>
+        // === АУДИО ===
+        const bgMusic = document.getElementById('bg-music');
+        bgMusic.volume = 0.35; // 35% громкости
+
         // === СТАРТОВЫЙ ЭКРАН ===
         const startScreen = document.getElementById('start-screen');
         const startBtn = document.getElementById('start-btn');
 
         startBtn.addEventListener('click', function() {
+            // Запускаем музыку
+            bgMusic.play().catch(e => console.log('Autoplay blocked:', e));
+            
             document.querySelectorAll('.slide').forEach(slide => {
                 slide.classList.add('active');
             });
@@ -346,6 +358,8 @@
                 if (entry.isIntersecting) {
                     videoWrapper.classList.add('visible');
                     continueBtn.classList.add('visible');
+                    // Останавливаем музыку при показе видео
+                    bgMusic.pause();
                 }
             });
         }, { threshold: 0.3 });
@@ -357,6 +371,9 @@
 
         continueBtn.addEventListener('click', function() {
             questionBlock.classList.add('visible');
+            // Возобновляем музыку
+            bgMusic.play().catch(e => console.log('Autoplay blocked:', e));
+            
             setTimeout(() => {
                 questionBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 300);
@@ -383,7 +400,7 @@
             noBtn.style.zIndex = '1000';
         }
 
-        // === КНОПКА "ДА" ===
+        // === КНОПКА "ДА" — ЛЕТЯЩИЕ СЕРДЕЧКИ ===
         document.getElementById('yes-btn').addEventListener('click', function() {
             questionBlock.style.display = 'none';
             continueBtn.style.display = 'none';
@@ -391,41 +408,77 @@
             const finalMessage = document.getElementById('final-message');
             finalMessage.style.display = 'block';
             
-            const duration = 5000;
-            const animationEnd = Date.now() + duration;
-            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 2000 };
-
-            function randomInRange(min, max) {
-                return Math.random() * (max - min) + min;
+            // Увеличиваем громкость музыки
+            bgMusic.volume = 0.5;
+            
+            // Летящие красные сердечки с плавной анимацией
+            const heartColors = ['#ff0000', '#ff1493', '#dc143c', '#ff416c', '#c71585'];
+            
+            // Фаза 1: Начальный взрыв сердечек
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    confetti({
+                        particleCount: 2,
+                        startVelocity: 25,
+                        spread: 360,
+                        ticks: 200,
+                        gravity: 0.3,
+                        drift: 0.5,
+                        colors: heartColors,
+                        shapes: ['circle'],
+                        scalar: 1.8,
+                        origin: {
+                            x: 0.5 + (Math.random() - 0.5) * 0.3,
+                            y: 0.6
+                        }
+                    });
+                }, i * 50);
             }
-
+            
+            // Фаза 2: Постоянный поток сердечек сверху
+            const duration = 6000;
+            const animationEnd = Date.now() + duration;
+            
             const interval = setInterval(function() {
                 const timeLeft = animationEnd - Date.now();
-
+                
                 if (timeLeft <= 0) {
                     return clearInterval(interval);
                 }
-
-                const particleCount = 50 * (timeLeft / duration);
                 
-                confetti(Object.assign({}, defaults, {
-                    particleCount,
-                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-                }));
-                confetti(Object.assign({}, defaults, {
-                    particleCount,
-                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-                }));
-            }, 250);
-
+                // Сердечки летят сверху вниз с плавным покачиванием
+                confetti({
+                    particleCount: 3,
+                    startVelocity: 15,
+                    spread: 180,
+                    ticks: 250,
+                    gravity: 0.2,
+                    drift: 1,
+                    colors: heartColors,
+                    shapes: ['circle'],
+                    scalar: 2,
+                    angle: 90,
+                    origin: {
+                        x: Math.random(),
+                        y: -0.1
+                    }
+                });
+            }, 150);
+            
+            // Фаза 3: Финальный акцент
             setTimeout(() => {
                 confetti({
-                    particleCount: 200,
-                    spread: 160,
-                    origin: { y: 0.6 },
-                    zIndex: 2000
+                    particleCount: 80,
+                    spread: 200,
+                    startVelocity: 40,
+                    ticks: 180,
+                    gravity: 0.25,
+                    drift: 0.8,
+                    colors: heartColors,
+                    scalar: 2.2,
+                    origin: { y: 0.6 }
                 });
-            }, 500);
+            }, 3000);
         });
     </script>
 </body>
