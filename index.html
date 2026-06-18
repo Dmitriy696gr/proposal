@@ -27,7 +27,7 @@
             background: rgba(0, 0, 0, 0.4);
         }
 
-        /* Стартовый экран с кнопкой запуска */
+        /* Стартовый экран */
         .start-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -103,12 +103,34 @@
             margin-bottom: 30px;
             border: 2px solid rgba(255, 255, 255, 0.1);
             background: #000;
+            aspect-ratio: 16 / 9;
         }
 
-        video {
-            width: 100%;
-            display: block;
-            border-radius: 13px;
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+
+        .continue-btn {
+            padding: 15px 50px;
+            font-size: 1.3rem;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+
+        .continue-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 65, 108, 0.6);
         }
 
         .question-block {
@@ -180,11 +202,6 @@
 
     <div class="background"></div>
 
-    <!-- Аудиоплеер (скрытый) -->
-    <audio id="bg-music" loop>
-        <source src="music.mp3" type="audio/mpeg">
-    </audio>
-
     <section class="slide"><p class="text-content">Моя принцесса, сейчас мы с тобой находимся в том самом месте, где зарождалась наша с тобой история.</p></section>
     <section class="slide"><p class="text-content">Она была <span class="highlight">не самой гладкой</span>.</p></section>
     <section class="slide"><p class="text-content"><span class="highlight">Не самой простой</span>.</p></section>
@@ -198,11 +215,14 @@
 
     <section class="video-section">
         <div class="video-wrapper">
-            <video id="myVideo" controls playsinline>
-                <source src="video.mp4" type="video/mp4">
-                Ваш браузер не поддерживает встроенные видео.
-            </video>
+            <iframe 
+                src="https://rutube.ru/play/embed/305db106a0816bbf9a32d209c6aee245" 
+                allow="clipboard-write; autoplay" 
+                allowfullscreen>
+            </iframe>
         </div>
+
+        <button class="continue-btn" id="continue-btn">Дальше →</button>
 
         <div class="question-block" id="question-block">
             <h2 class="question-text">Ты выйдешь за меня замуж? 💍</h2>
@@ -217,20 +237,12 @@
     </section>
 
     <script>
-        // === СТАРТОВЫЙ ЭКРАН И МУЗЫКА ===
+        // === СТАРТОВЫЙ ЭКРАН ===
         const startScreen = document.getElementById('start-screen');
         const startBtn = document.getElementById('start-btn');
-        const bgMusic = document.getElementById('bg-music');
 
         startBtn.addEventListener('click', function() {
-            // Запускаем музыку
-            bgMusic.volume = 0.5; // Громкость 50% (можно изменить от 0 до 1)
-            bgMusic.play().catch(e => console.log('Autoplay blocked:', e));
-            
-            // Скрываем стартовый экран
             startScreen.classList.add('hidden');
-            
-            // Прокручиваем к первому слайду
             setTimeout(() => {
                 document.querySelector('.slide').scrollIntoView({ behavior: 'smooth' });
             }, 500);
@@ -248,11 +260,11 @@
 
         document.querySelectorAll('.text-content').forEach(el => observer.observe(el));
 
-        // === ЛОГИКА ВИДЕО И ВОПРОСА ===
-        const video = document.getElementById('myVideo');
+        // === КНОПКА "ДАЛЬШЕ" ПОСЛЕ ВИДЕО ===
+        const continueBtn = document.getElementById('continue-btn');
         const questionBlock = document.getElementById('question-block');
 
-        video.addEventListener('ended', function() {
+        continueBtn.addEventListener('click', function() {
             questionBlock.classList.add('visible');
             setTimeout(() => {
                 questionBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -283,12 +295,10 @@
         // === ОБРАБОТЧИК КНОПКИ "ДА" ===
         document.getElementById('yes-btn').addEventListener('click', function() {
             questionBlock.style.display = 'none';
+            continueBtn.style.display = 'none';
             
             const finalMessage = document.getElementById('final-message');
             finalMessage.style.display = 'block';
-            
-            // Увеличиваем громкость музыки
-            bgMusic.volume = 0.8;
             
             // Конфетти
             const duration = 5000;
