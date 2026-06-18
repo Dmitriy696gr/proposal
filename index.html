@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Для моей принцессы</title>
+    <title>Для тебя</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300;1,600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -15,27 +15,33 @@
             overflow-x: hidden;
         }
 
+        /* Фон с фото */
         .background {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            /* Закомментируй градиент и раскомментируй строку ниже, когда добавишь фото */
+            /* background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); */
+            background: url('photo.jpg') no-repeat center center fixed;
+            background-size: cover;
             z-index: -1;
         }
         
+        /* Затемнение поверх фото для читаемости текста */
         .background::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4);
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
         }
 
-        /* Стартовый экран */
         .start-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: rgba(0, 0, 0, 0.9);
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             z-index: 9999;
-            transition: opacity 1s ease-out;
+            transition: opacity 1.5s ease-out;
         }
 
         .start-screen.hidden {
@@ -76,17 +82,24 @@
             padding: 20px; text-align: center;
         }
 
+        /* Плавная анимация текста */
         .text-content {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 2.2rem; font-style: italic; font-weight: 300;
-            line-height: 1.4; max-width: 700px;
-            opacity: 0; transform: translateY(40px);
-            transition: all 1.2s ease-out;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            font-size: 2.2rem;
+            font-style: italic;
+            font-weight: 300;
+            line-height: 1.4;
+            max-width: 700px;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 1.5s ease-in-out, transform 1.5s ease-in-out;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.8);
         }
 
-        .text-content.visible { opacity: 1; transform: translateY(0); }
-        .highlight { color: #ffd700; font-weight: 600; }
+        .text-content.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
 
         .video-section {
             min-height: 100vh;
@@ -99,11 +112,19 @@
             width: 100%; max-width: 700px;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
             margin-bottom: 30px;
             border: 2px solid rgba(255, 255, 255, 0.1);
             background: #000;
             aspect-ratio: 16 / 9;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 1.5s ease-in-out, transform 1.5s ease-in-out;
+        }
+
+        .video-wrapper.visible {
+            opacity: 1;
+            transform: scale(1);
         }
 
         .video-wrapper iframe {
@@ -126,6 +147,12 @@
             box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
             transition: transform 0.2s, box-shadow 0.2s;
             margin-top: 20px;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out, transform 0.2s, box-shadow 0.2s;
+        }
+
+        .continue-btn.visible {
+            opacity: 1;
         }
 
         .continue-btn:hover {
@@ -135,51 +162,78 @@
 
         .question-block {
             text-align: center;
-            opacity: 0; transform: scale(0.9);
-            transition: all 1s ease-out;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 1.5s ease-in-out, transform 1.5s ease-in-out;
             display: none; 
         }
 
         .question-block.visible {
-            opacity: 1; transform: scale(1); display: block;
+            opacity: 1;
+            transform: scale(1);
+            display: block;
         }
 
         .question-text {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 3rem; margin-bottom: 30px; color: #ffd700;
+            font-size: 3rem;
+            margin-bottom: 30px;
+            color: #ffd700;
         }
 
         .btn {
-            padding: 15px 50px; font-size: 1.3rem; border: none;
-            border-radius: 50px; cursor: pointer; margin: 10px;
-            font-family: 'Montserrat', sans-serif; font-weight: 600;
+            padding: 15px 50px;
+            font-size: 1.3rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .btn-yes {
             background: linear-gradient(45deg, #ff416c, #ff4b2b);
-            color: white; box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
         }
         .btn-yes:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(255, 65, 108, 0.6); }
 
         .btn-no {
-            background: rgba(255, 255, 255, 0.1); color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3); position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
         }
 
         .final-message {
-            display: none; text-align: center; padding: 40px 20px;
-            animation: fadeInUp 1.5s ease-out;
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0;
+            animation: fadeInUp 1.5s ease-out forwards;
         }
         .final-message h2 {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 3.5rem; color: #ffd700; margin-bottom: 20px;
+            font-size: 3.5rem;
+            color: #ffd700;
+            margin-bottom: 20px;
         }
-        .final-message p { font-size: 1.5rem; line-height: 1.6; }
+        .final-message p {
+            font-size: 1.5rem;
+            line-height: 1.6;
+        }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @media (max-width: 600px) {
@@ -196,28 +250,33 @@
 
     <!-- Стартовый экран -->
     <div class="start-screen" id="start-screen">
-        <h1 class="start-title">Для тебя, моя принцесса 💕</h1>
+        <h1 class="start-title">С самого начала</h1>
         <button class="start-btn" id="start-btn">Начать</button>
     </div>
 
     <div class="background"></div>
 
-    <section class="slide"><p class="text-content">Моя принцесса, сейчас мы с тобой находимся в том самом месте, где зарождалась наша с тобой история.</p></section>
-    <section class="slide"><p class="text-content">Она была <span class="highlight">не самой гладкой</span>.</p></section>
-    <section class="slide"><p class="text-content"><span class="highlight">Не самой простой</span>.</p></section>
-    <section class="slide"><p class="text-content">Мы спорили, ошибались и иногда совершенно не понимали друг друга.</p></section>
-    <section class="slide"><p class="text-content">Были моменты, когда казалось, что весь мир против нас.</p></section>
-    <section class="slide"><p class="text-content"><span class="highlight" style="font-size: 3rem;">Но...</span></p></section>
-    <section class="slide"><p class="text-content">Но наши линии судеб оказались крепче любых препятствий.</p></section>
-    <section class="slide"><p class="text-content">Каждая трудность лишь доказывала: мы созданы друг для друга.</p></section>
-    <section class="slide"><p class="text-content">Ты — мой самый главный выбор, моя опора и моя самая большая победа.</p></section>
-    <section class="slide"><p class="text-content">И есть кое-что, что я хочу тебе сказать не словами, а через то, что чувствуют герои этого фильма...</p></section>
+    <!-- Слайды с текстом -->
+    <section class="slide"><p class="text-content">Говорят, любовь — это случайность.<br>Мы не выбираем, кого полюбить. Это просто происходит.</p></section>
+    <section class="slide"><p class="text-content">Но для меня это осознанный выбор.<br>Я выбираю тебя каждый день. Снова и снова.</p></section>
+    <section class="slide"><p class="text-content">Ты — мой свет, моё вдохновение<br>и моя главная причина улыбаться.</p></section>
+    <section class="slide"><p class="text-content">И вот мы снова здесь.<br>В том самом месте, где всё началось.</p></section>
+    <section class="slide"><p class="text-content">Наша история была не самой простой.</p></section>
+    <section class="slide"><p class="text-content">Мы спорили, ошибались<br>и иногда совершенно не понимали друг друга.</p></section>
+    <section class="slide"><p class="text-content">Были моменты, когда казалось,<br>что проще отступить.</p></section>
+    <section class="slide"><p class="text-content" style="font-size: 3rem;">Но...</p></section>
+    <section class="slide"><p class="text-content">Мы оказались сильнее любых препятствий.</p></section>
+    <section class="slide"><p class="text-content">Каждая трудность лишь доказывала:<br>мы созданы друг для друга.</p></section>
+    <section class="slide"><p class="text-content">Ты — моя опора, мой дом<br>и моя самая большая победа.</p></section>
+    <section class="slide"><p class="text-content">И есть кое-что, что я хочу тебе сказать.<br>Но пусть за меня это сделают герои кино...</p></section>
 
+    <!-- Секция с видео -->
     <section class="video-section">
-        <div class="video-wrapper">
+        <div class="video-wrapper" id="video-wrapper">
             <iframe 
-                src="https://rutube.ru/play/embed/305db106a0816bbf9a32d209c6aee245" 
-                allow="clipboard-write; autoplay" 
+                src="https://vkvideo.ru/video_ext.php?oid=-239685164&id=456239017&hd=2" 
+                allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" 
+                frameborder="0" 
                 allowfullscreen>
             </iframe>
         </div>
@@ -248,20 +307,42 @@
             }, 500);
         });
 
-        // === АНИМАЦИЯ ПОЯВЛЕНИЯ ТЕКСТА ПРИ СКРОЛЛЕ ===
-        const observerOptions = { threshold: 0.3 };
+        // === ПЛАВНАЯ АНИМАЦИЯ ПОЯВЛЕНИЯ ПРИ СКРОЛЛЕ ===
+        const observerOptions = { 
+            threshold: 0.5,
+            rootMargin: '0px 0px -10% 0px'
+        };
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
+                } else {
+                    // Убираем класс, когда элемент уходит из видимости
+                    entry.target.classList.remove('visible');
                 }
             });
         }, observerOptions);
 
+        // Наблюдаем за всеми текстовыми блоками
         document.querySelectorAll('.text-content').forEach(el => observer.observe(el));
 
-        // === КНОПКА "ДАЛЬШЕ" ПОСЛЕ ВИДЕО ===
+        // Наблюдаем за видео-секцией
+        const videoWrapper = document.getElementById('video-wrapper');
         const continueBtn = document.getElementById('continue-btn');
+        
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    videoWrapper.classList.add('visible');
+                    continueBtn.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.3 });
+
+        videoObserver.observe(videoWrapper);
+
+        // === КНОПКА "ДАЛЬШЕ" ПОСЛЕ ВИДЕО ===
         const questionBlock = document.getElementById('question-block');
 
         continueBtn.addEventListener('click', function() {
