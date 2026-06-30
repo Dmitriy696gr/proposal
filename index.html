@@ -15,20 +15,22 @@
             overflow-x: hidden;
         }
 
-        .background {
+        /* Видео-фон */
+        .video-background {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('photo.jpg') no-repeat center center;
-            background-size: cover;
-            background-attachment: scroll;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
             z-index: -1;
         }
         
-        .background::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+        /* Затемнение поверх видео */
+        .background-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
         }
 
         .start-screen {
@@ -259,6 +261,14 @@
 </head>
 <body>
 
+    <!-- Видео-фон -->
+    <video class="video-background" autoplay loop muted playsinline>
+        <source src="background.mp4" type="video/mp4">
+    </video>
+    
+    <!-- Затемнение поверх видео -->
+    <div class="background-overlay"></div>
+
     <!-- Аудио -->
     <audio id="bg-music" loop>
         <source src="music.mp3" type="audio/mpeg">
@@ -268,8 +278,6 @@
         <h1 class="start-title">С самого начала</h1>
         <button class="start-btn" id="start-btn">Начать</button>
     </div>
-
-    <div class="background"></div>
 
     <section class="slide"><p class="text-content">Говорят, любовь — это случайность.<br>Мы не выбираем, кого полюбить. Это просто происходит.</p></section>
     <section class="slide"><p class="text-content">Но для меня это осознанный выбор.<br>Я выбираю тебя каждый день. Снова и снова.</p></section>
@@ -310,14 +318,13 @@
     <script>
         // === АУДИО ===
         const bgMusic = document.getElementById('bg-music');
-        bgMusic.volume = 0.35; // 35% громкости
+        bgMusic.volume = 0.35;
 
         // === СТАРТОВЫЙ ЭКРАН ===
         const startScreen = document.getElementById('start-screen');
         const startBtn = document.getElementById('start-btn');
 
         startBtn.addEventListener('click', function() {
-            // Запускаем музыку
             bgMusic.play().catch(e => console.log('Autoplay blocked:', e));
             
             document.querySelectorAll('.slide').forEach(slide => {
@@ -358,7 +365,6 @@
                 if (entry.isIntersecting) {
                     videoWrapper.classList.add('visible');
                     continueBtn.classList.add('visible');
-                    // Останавливаем музыку при показе видео
                     bgMusic.pause();
                 }
             });
@@ -371,7 +377,6 @@
 
         continueBtn.addEventListener('click', function() {
             questionBlock.classList.add('visible');
-            // Возобновляем музыку
             bgMusic.play().catch(e => console.log('Autoplay blocked:', e));
             
             setTimeout(() => {
@@ -408,13 +413,10 @@
             const finalMessage = document.getElementById('final-message');
             finalMessage.style.display = 'block';
             
-            // Увеличиваем громкость музыки
             bgMusic.volume = 0.5;
             
-            // Летящие красные сердечки с плавной анимацией
             const heartColors = ['#ff0000', '#ff1493', '#dc143c', '#ff416c', '#c71585'];
             
-            // Фаза 1: Начальный взрыв сердечек
             for (let i = 0; i < 30; i++) {
                 setTimeout(() => {
                     confetti({
@@ -435,7 +437,6 @@
                 }, i * 50);
             }
             
-            // Фаза 2: Постоянный поток сердечек сверху
             const duration = 6000;
             const animationEnd = Date.now() + duration;
             
@@ -446,7 +447,6 @@
                     return clearInterval(interval);
                 }
                 
-                // Сердечки летят сверху вниз с плавным покачиванием
                 confetti({
                     particleCount: 3,
                     startVelocity: 15,
@@ -465,7 +465,6 @@
                 });
             }, 150);
             
-            // Фаза 3: Финальный акцент
             setTimeout(() => {
                 confetti({
                     particleCount: 80,
